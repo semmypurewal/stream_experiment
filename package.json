@@ -1,0 +1,7 @@
+{
+  "name": "stream experiment",
+  "version": "0.0.0",
+  "dependencies": {
+    "ntwitter": "^0.5.0"
+  }
+}
