@@ -7,7 +7,7 @@ var ntwitter = require("ntwitter"),
 function TweetStream (credentials, streamType, streamOptions) {
     Readable.call(this, {"objectMode": true});
     this._streamType = streamType;
-    this._streamOptions = streamOptions;
+    this._streamOptions = streamOptions || {};
     this._ntwitter = new ntwitter(credentials);
 }
 util.inherits(TweetStream, Readable);
@@ -25,10 +25,14 @@ TweetStream.prototype._read = function () {
     }
 }
 
-var source = new FunctionalStream(new TweetStream(credentials, "statuses/filter", {"track":["awesome"]}));
+var source = new FunctionalStream(new TweetStream(credentials, "statuses/sample"));
 
-source.throttle(500).map(function (tweet) {
-    return tweet.text;
-}).forEach(function (tweet) {
-    console.log(tweet);
+source.throttle(50).filter(function (tweet) {
+    return tweet["lang"] === "en";
+}).filter(function (tweet) {
+    return tweet["text"].indexOf("#") > -1;
+}).map(function (tweet) {
+    return tweet["text"].match(/\#\w+/g);
+}).forEach(function (hashtags) {
+    console.log(hashtags);
 });
